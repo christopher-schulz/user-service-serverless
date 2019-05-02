@@ -2,6 +2,9 @@ import json
 
 
 class Request:
+    """
+    Convenience class for pulling apart the interesting parts of a lambda request.
+    """
 
     def __init__(self, event):
         print("event: " + str(event))

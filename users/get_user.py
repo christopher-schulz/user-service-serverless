@@ -1,6 +1,5 @@
 import logging
 import os
-import json
 import boto3
 from users.lambda_handler import LambdaHandler
 
@@ -9,8 +8,8 @@ logging.getLogger().setLevel(os.environ.get("LOGLEVEL", "INFO"))
 
 class UserGetter(LambdaHandler):
     """
-    ActualsFetcher will be invoked when called via the API.  When called it'll pull the
-    pre-calculated actuals out of the database and return them to the caller.
+    UserGetter will be invoked via API gateway.  When called it'll look up the currently logged in
+    user in Cognito and return those details.
     """
 
     def __init__(self, success_status_code, required_group):
@@ -30,19 +29,3 @@ class UserGetter(LambdaHandler):
 def handler(event, context):
     fetcher = UserGetter(200, 'ActiveUsers')
     return fetcher.lambda_handle(event, context)
-
-
-if __name__ == '__main__':
-    event = {
-        "httpMethod": "GET",
-        "requestContext": {
-            "authorizer": {
-                "principalId": "9804c73f-80ba-41d4-9a96-f69acc79478d"
-            }
-        },
-        "queryStringParameters": {
-            "date": "2019-03-29"
-        }
-    }
-    response = handler(event, '')
-    print(response)

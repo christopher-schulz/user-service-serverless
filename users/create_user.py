@@ -9,8 +9,8 @@ logging.getLogger().setLevel(os.environ.get("LOGLEVEL", "INFO"))
 
 class UserCreator(LambdaHandler):
     """
-    ActualsFetcher will be invoked when called via the API.  When called it'll pull the
-    pre-calculated actuals out of the database and return them to the caller.
+    UserCreator will be invoked via API gateway.  When called it'll authorize the user
+    and then add requested cognito user.
     """
 
     def __init__(self, success_status_code, required_group):
@@ -40,21 +40,3 @@ class UserCreator(LambdaHandler):
 def handler(event, context):
     fetcher = UserCreator(200, 'UserManager')
     return fetcher.lambda_handle(event, context)
-
-
-if __name__ == '__main__':
-    event = {
-        "httpMethod": "GET",
-        "requestContext": {
-            "authorizer": {
-                "principalId": "9804c73f-80ba-41d4-9a96-f69acc79478d"
-            }
-        },
-        "queryStringParameters": {
-            "date": "2019-03-29"
-        }
-    }
-    response = handler(event, '')
-    print(response)
-
-

@@ -7,10 +7,10 @@ from users.lambda_handler import LambdaHandler
 logging.getLogger().setLevel(os.environ.get("LOGLEVEL", "INFO"))
 
 
-class GroupAdder(LambdaHandler):
+class GroupRemover(LambdaHandler):
     """
-    ActualsFetcher will be invoked when called via the API.  When called it'll pull the
-    pre-calculated actuals out of the database and return them to the caller.
+    GroupRemover will be invoked via API gateway.  When called it'll authorize the user
+    and then remove the requested user from the requested cognito group.
     """
 
     def __init__(self, success_status_code, required_group):
@@ -31,5 +31,5 @@ class GroupAdder(LambdaHandler):
 
 
 def handler(event, context):
-    fetcher = GroupAdder(200, 'UserManager')
+    fetcher = GroupRemover(200, 'UserManager')
     return fetcher.lambda_handle(event, context)
