@@ -1,0 +1,86 @@
+service: user-service-serverless
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  region:
+    dev: us-west-2
+  cognito:
+    user-pool:
+      arn:
+        dev: arn:aws:cognito-idp:us-west-2:044700253110:userpool/us-west-2_KV4bn2Gkg
+      id:
+        dev: us-west-2_KV4bn2Gkg
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: python3.6
+  region: ${self:custom.region.${opt:stage}}
+  timeout: 30
+  logRetentionInDays: 30
+  iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - cognito-idp:AdminGetUser
+      - cognito-idp:AdminCreateUser
+      - cognito-idp:AdminAddUserToGroup
+      - cognito-idp:AdminRemoveUserFromGroup
+    Resource: ${self:custom.cognito.user-pool.arn.${opt:stage}}
+
+  environment:
+    REGION: ${self:custom.region.${opt:stage}}
+    USER_POOL_ID: ${self:custom.cognito.user-pool.id.${opt:stage}}
+    LOGLEVEL: INFO
+
+package:
+  exclude:
+    - node_modules/**
+    - tests/**
+    - openapi/**
+    - .eggs/**
+
+functions:
+
+  getUser:
+    handler: users.get_user.handler
+    events:
+      - http:
+          path: 'users'
+          method: get
+          authorizer:
+            name: authorizer
+            arn: ${self:custom.cognito.user-pool.arn.${opt:stage}}
+
+  createUser:
+    handler: users.create_user.handler
+    events:
+      - http:
+          path: 'users'
+          method: post
+          authorizer:
+            name: authorizer
+            arn: ${self:custom.cognito.user-pool.arn.${opt:stage}}
+
+  addGroupMembership:
+    handler: users.add_group.handler
+    events:
+      - http:
+          path: '/groups/{groupname}/members/{username}'
+          method: post
+          authorizer:
+            name: authorizer
+            arn: ${self:custom.cognito.user-pool.arn.${opt:stage}}
+
+  removeGroupMembership:
+    handler: users.remove_group.handler
+    events:
+      - http:
+          path: '/groups/{groupname}/members/{username}'
+          method: delete
+          authorizer:
+            name: authorizer
+            arn: ${self:custom.cognito.user-pool.arn.${opt:stage}}

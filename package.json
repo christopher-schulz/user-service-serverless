@@ -1,0 +1,13 @@
+{
+  "name": "bookings-api",
+  "version": "1.0.0",
+  "description": "Serverless apis for yankee trails bookings",
+  "dependencies": {
+    "serverless-python-requirements": "^2.5.0"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

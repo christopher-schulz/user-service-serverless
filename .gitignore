@@ -1,0 +1,10 @@
+venv
+.idea
+.eggs
+.serverless
+*.pyc
+*.pyo
+node_modules
+*.iml
+*.egg-info
+.requirements
